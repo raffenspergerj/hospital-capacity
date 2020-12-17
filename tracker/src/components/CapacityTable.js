@@ -12,6 +12,10 @@ import {
     percentCOVID_ICU
 } from '../metrics';
 import { toTitleCase, weekToString } from '../helpers/formatters';
+import paginationFactory, {
+    PaginationProvider,
+    PaginationListStandalone
+} from 'react-bootstrap-table2-paginator';
 
 export default function CapacityTable() {
 
@@ -152,6 +156,12 @@ export default function CapacityTable() {
         )
     };
 
+    // pagination options
+    const paginationOption = {
+        custom: true,
+        totalSize: tableData.length
+    };
+
     return (
         <>
             <StateSelect setState={setState} state={state} isLoading={isLoading} />
@@ -161,15 +171,31 @@ export default function CapacityTable() {
                     <div id="table-container">
                         <p className="lead text-center mt-3 mb-3">
                             📈 click on any row to graph trend</p>
-                        <BootstrapTable
-                            wrapperClasses="table-responsive"
-                            hover
-                            keyField='hospital_pk'
-                            data={tableData}
-                            columns={columns}
-                            defaultSorted={defaultSorted}
-                            expandRow={expandRow}
-                        />
+                        <PaginationProvider
+                            pagination={paginationFactory(paginationOption)}
+                        >
+                            {
+                                ({
+                                    paginationProps,
+                                    paginationTableProps
+                                }) => (
+                                    <>
+                                        <BootstrapTable
+                                            wrapperClasses="table-responsive"
+                                            hover
+                                            keyField='hospital_pk'
+                                            data={tableData}
+                                            columns={columns}
+                                            defaultSorted={defaultSorted}
+                                            expandRow={expandRow}
+                                            {...paginationTableProps}
+                                        />
+                                        <PaginationListStandalone
+                                            {...paginationProps} />
+                                    </>
+                                )
+                            }
+                        </PaginationProvider>
                     </div>
                 </>
             }
